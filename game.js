@@ -359,7 +359,7 @@
     ctx.imageSmoothingQuality = "high";
   }
 
-  const ASSET_V = "8182e91";
+  const ASSET_V = "20261118c";
   function loadImg(src) {
     return new Promise((res, rej) => {
       const i = new Image();
@@ -989,9 +989,12 @@
   function officialPose(opt) {
     if (opt.dizzy) return "dizzy";
     if ((opt.anim || 0) > 0) return "attack";
-    if (opt.moving) return "walk";
+    if (opt.moving) {
+      const phase = (opt.walk != null ? opt.walk : time * 7);
+      return (Math.floor(phase) % 2 === 0) ? "walk" : "idle2";
+    }
     if (opt.ready) return "ready";
-    return (Math.floor(time * 2) % 2 === 0) ? "idle" : "idle2";
+    return "idle";
   }
 
   function drawSpriteAt(g, img, x, y, h, facing, flash) {
@@ -1017,8 +1020,8 @@
     let pose = "idle";
     if (player.hurt > 0) pose = "dizzy";
     else if (mount && player.anim > 0) pose = "attack";
-    else if (moving) pose = "walk";
-    else pose = (Math.floor(time * 2) % 2 === 0) ? "idle" : "idle2";
+    else if (moving) pose = (Math.floor(shiba.walk) % 2 === 0) ? "walk" : "idle2";
+    else pose = "idle";
     const img = images["shiba_" + pose] || images["shiba_idle"];
     drawSpriteAt(g, img, x, y, h, fac);
   }
@@ -1032,7 +1035,7 @@
       ready: opt.ready, moving: opt.moving, walk: opt.walk, _x: x
     });
     const img = images[id + "_" + pose] || images[id + "_idle"];
-    const bob = opt.moving ? Math.sin((opt.walk || 0) * 2) * 2 : 0;
+    const bob = opt.moving ? Math.abs(Math.sin((opt.walk || 0) * Math.PI)) * 3 : 0;
     drawSpriteAt(g, img, x, y + bob, h, opt.facing || 1, (opt.hurt || 0) > 0);
   }
 
@@ -1093,8 +1096,8 @@
     if (e.dead) pose="dizzy";
     else if (e.state==="attack") pose="attack";
     else if (e.state==="ready") pose="ready";
-    else if (e.state==="walk") pose = "walk";
-    else pose = (Math.floor(time*2+e.x)%2===0)?"idle":"idle2";
+    else if (e.state==="walk") pose = (Math.floor(e.walk) % 2 === 0) ? "walk" : "idle2";
+    else pose = "idle";
     const img = images[e.kind+"_"+pose] || images[e.kind+"_idle"];
     const h = 104 * e.scale / 0.42;
     if (img) {
