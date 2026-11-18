@@ -1,0 +1,194 @@
+{
+  "maps": {
+    "field": {
+      "w": 2752,
+      "h": 1536,
+      "mw": 688,
+      "mh": 384
+    },
+    "market": {
+      "w": 2752,
+      "h": 1536,
+      "mw": 688,
+      "mh": 384
+    },
+    "plaza": {
+      "w": 2752,
+      "h": 1536,
+      "mw": 688,
+      "mh": 384
+    },
+    "docks": {
+      "w": 2752,
+      "h": 1536,
+      "mw": 688,
+      "mh": 384
+    },
+    "beach": {
+      "w": 2752,
+      "h": 1536,
+      "mw": 688,
+      "mh": 384
+    },
+    "forge": {
+      "w": 1536,
+      "h": 858,
+      "mw": 384,
+      "mh": 214
+    }
+  },
+  "sprites": {
+    "clover": [
+      {
+        "pose": "idle",
+        "file": "assets/sprites/clover_idle.png",
+        "w": 146,
+        "h": 220
+      },
+      {
+        "pose": "idle2",
+        "file": "assets/sprites/clover_idle2.png",
+        "w": 164,
+        "h": 220
+      },
+      {
+        "pose": "walk",
+        "file": "assets/sprites/clover_walk.png",
+        "w": 186,
+        "h": 220
+      },
+      {
+        "pose": "ready",
+        "file": "assets/sprites/clover_ready.png",
+        "w": 167,
+        "h": 220
+      },
+      {
+        "pose": "attack",
+        "file": "assets/sprites/clover_attack.png",
+        "w": 217,
+        "h": 220
+      },
+      {
+        "pose": "dizzy",
+        "file": "assets/sprites/clover_dizzy.png",
+        "w": 221,
+        "h": 220
+      }
+    ],
+    "penguin": [
+      {
+        "pose": "idle",
+        "file": "assets/sprites/penguin_idle.png",
+        "w": 159,
+        "h": 220
+      },
+      {
+        "pose": "idle2",
+        "file": "assets/sprites/penguin_idle2.png",
+        "w": 159,
+        "h": 220
+      },
+      {
+        "pose": "walk",
+        "file": "assets/sprites/penguin_walk.png",
+        "w": 146,
+        "h": 220
+      },
+      {
+        "pose": "ready",
+        "file": "assets/sprites/penguin_ready.png",
+        "w": 153,
+        "h": 220
+      },
+      {
+        "pose": "attack",
+        "file": "assets/sprites/penguin_attack.png",
+        "w": 245,
+        "h": 220
+      },
+      {
+        "pose": "dizzy",
+        "file": "assets/sprites/penguin_dizzy.png",
+        "w": 226,
+        "h": 220
+      }
+    ],
+    "dandelion": [
+      {
+        "pose": "idle",
+        "file": "assets/sprites/dandelion_idle.png",
+        "w": 203,
+        "h": 220
+      },
+      {
+        "pose": "idle2",
+        "file": "assets/sprites/dandelion_idle2.png",
+        "w": 261,
+        "h": 220
+      },
+      {
+        "pose": "walk",
+        "file": "assets/sprites/dandelion_walk.png",
+        "w": 189,
+        "h": 220
+      },
+      {
+        "pose": "ready",
+        "file": "assets/sprites/dandelion_ready.png",
+        "w": 234,
+        "h": 220
+      },
+      {
+        "pose": "attack",
+        "file": "assets/sprites/dandelion_attack.png",
+        "w": 233,
+        "h": 220
+      },
+      {
+        "pose": "dizzy",
+        "file": "assets/sprites/dandelion_dizzy.png",
+        "w": 255,
+        "h": 220
+      }
+    ],
+    "crab": [
+      {
+        "pose": "idle",
+        "file": "assets/sprites/crab_idle.png",
+        "w": 214,
+        "h": 220
+      },
+      {
+        "pose": "idle2",
+        "file": "assets/sprites/crab_idle2.png",
+        "w": 213,
+        "h": 220
+      },
+      {
+        "pose": "walk",
+        "file": "assets/sprites/crab_walk.png",
+        "w": 207,
+        "h": 220
+      },
+      {
+        "pose": "ready",
+        "file": "assets/sprites/crab_ready.png",
+        "w": 221,
+        "h": 220
+      },
+      {
+        "pose": "attack",
+        "file": "assets/sprites/crab_attack.png",
+        "w": 254,
+        "h": 220
+      },
+      {
+        "pose": "dizzy",
+        "file": "assets/sprites/crab_dizzy.png",
+        "w": 202,
+        "h": 220
+      }
+    ]
+  }
+}
