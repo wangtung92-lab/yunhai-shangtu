@@ -359,12 +359,13 @@
     ctx.imageSmoothingQuality = "high";
   }
 
+  const ASSET_V = "8182e91";
   function loadImg(src) {
     return new Promise((res, rej) => {
       const i = new Image();
       i.onload = () => res(i);
       i.onerror = () => rej(new Error(src));
-      i.src = src;
+      i.src = src + (src.indexOf("?")>=0 ? "&" : "?") + "v=" + ASSET_V;
     });
   }
 
