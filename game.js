@@ -26,7 +26,7 @@
   let lastCombatAt = -1e9;
   const COMBAT_HOLD = 5;
 
-  const CLASSES = [
+  const JOBS = [
     { id:"sword", name:"蒼穹劍士", icon:"⚔️", role:"近戰物理／坦克", desc:"單手闊劍＋圓盾。旅人皮甲起步，擅長衝鋒與守護。", color:"#8B5A2B",
       skills:["破空斬","衝鋒突刺","聖盾猛擊","劍刃旋風斬"], ult:"諸神裁決聖劍", atk:16, hp:120, mp:40, range:78, speed:168 },
     { id:"mage", name:"星詠法師", icon:"🔮", role:"遠程範圍魔法", desc:"浮空星盤＋法杖。以奧術星彈點亮夜空。", color:"#3A5CBF",
@@ -38,6 +38,10 @@
     { id:"merchant", name:"雲海行商", icon:"💰", role:"中程戰商／召喚", desc:"黃金算盤＋商旅背囊。金幣也能成為兵器。", color:"#C49A3C",
       skills:["破甲金幣鏢","金錢重擊","漫天金幣雨","商盟傭兵召集"], ult:"財神降世・黃金殿", atk:14, hp:105, mp:50, range:120, speed:164 }
   ];
+  const BEGINNER = { id:"beginner", name:"初心者", icon:"🌱", role:"尚未轉職", desc:"以旅人輕裝起步。到 20 等再向艾莉亞選擇第一條傳承。", color:"#6B8F4E",
+      skills:["練習揮擊","防身一擊","應急包紮","奮力一搏"], ult:"初心覺醒", atk:11, hp:100, mp:30, range:70, speed:160 };
+  const CLASSES = [BEGINNER].concat(JOBS);
+  const FIRST_JOB_LV = 20;
 
   const MAPS = {
     plaza: { w:2752, h:1536, src:"assets/maps/plaza.jpg", mask:"assets/masks/plaza.png", safe:true, name:"風車鎮主城廣場", sign:"風車鎮廣場", sub:"安全區域 · 主城",
@@ -61,7 +65,7 @@
         {id:"luna", name:"天空領航員・露娜", tag:"🧭 領航員", x:1957, y:581, color:"#3A6CBF",
           talk:"羅盤指向八大浮空大陸。南郊草原的星門已經為你點亮，先去那裡熟悉戰鬥吧。需要我送你一程嗎？", travel:true},
         {id:"arya", name:"職業大導師・艾莉亞", tag:"📜 導師", x:1101, y:949, color:"#6B4CAF",
-          talk:"每一條傳承都會在 Lv.10、35、50 綻放新的光芒。現在先把基礎技能用順，SP 會在升級時獲得。"}
+          talk:"你會以初心者起步。到 20 等再來找我，我會幫你選第一條傳承。現在先把基礎打穩，SP 會在升級時獲得。"}
       ]},
     field: { w:2752, h:1536, src:"assets/maps/field.jpg", mask:"assets/masks/field.png", safe:false, name:"風車鎮南郊草原", sign:"南郊草原", sub:"1〜8 等冒險區域",
       spawn:[657,612],
@@ -115,7 +119,7 @@
   const masks = {};
   const player = {
     x:1376, y:1071, vx:0, vy:0, facing:1, walk:0,
-    classId:"sword", gender:"male", name:"",
+    classId:"beginner", gender:"male", name:"",
     lv:1, exp:0, expMax:50, gold:0, sp:0,
     hp:120, maxHp:120, mp:40, maxMp:40,
     atkCd:0, anim:0, hurt:0, inv:0, dash:0, dashCd:0,
@@ -298,7 +302,7 @@
     $("create").classList.add("show");
     mode = "create";
     player.name = "";
-    player.classId = "sword";
+    player.classId = "beginner";
     player.gender = "male";
     const input = $("hero-name-input");
     if (input) { input.value = ""; showNameHint(""); }
@@ -351,6 +355,8 @@
     canvas.width = (W*DPR)|0; canvas.height = (H*DPR)|0;
     canvas.style.width = W+"px"; canvas.style.height = H+"px";
     ctx.setTransform(DPR,0,0,DPR,0,0);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
   }
 
   function loadImg(src) {
@@ -545,6 +551,7 @@
   }
 
   function gainExp(n) {
+    const prevLv = player.lv;
     player.exp += n;
     while (player.exp >= player.expMax) {
       player.exp -= player.expMax;
@@ -557,6 +564,9 @@
       flash=.5; addFloat(player.x, player.y-60, "升級！", "crit");
       addPart(player.x, player.y, "#E8B84A", 24, 200);
       log("升到了 Lv "+player.lv+"！獲得 1 點 SP");
+      if (player.classId==="beginner" && player.lv>=FIRST_JOB_LV && prevLv < FIRST_JOB_LV) {
+        log("你已經到達 "+FIRST_JOB_LV+" 等。回廣場找艾莉亞，選擇第一條傳承吧。");
+      }
       sfx("levelUp");
       requestSave(true);
     }
@@ -707,7 +717,7 @@
       if (s.name.indexOf("衝鋒")>=0) {
         enemies.forEach(e=>{ if(!e.dead && dist(player,e)<90) deal(e,c.atk*1.8,false); });
       }
-    } else if (s.name.indexOf("恩典")>=0 || s.name.indexOf("年輪")>=0) {
+    } else if (s.name.indexOf("恩典")>=0 || s.name.indexOf("年輪")>=0 || s.name.indexOf("包紮")>=0) {
       player.hp=Math.min(player.maxHp, player.hp+player.maxHp*0.28);
       addPart(player.x, player.y, "#7EC97A", 18, 80);
     } else {
@@ -745,7 +755,7 @@
         if (bd>c.range*0.75) { ix+=Math.cos(a); iy+=Math.sin(a); }
         player.target=t;
         if (bd<c.range && player.atkCd<=0) doAttack();
-        skills.forEach((s,i)=>{ if(s.cd<=0 && player.mp>10) cast(i); });
+        // auto-hunt only uses basic attacks; movement/ult skills stay manual
       }
     }
     const len=Math.hypot(ix,iy)||1;
@@ -758,7 +768,7 @@
     const moving = Math.hypot(player.vx, player.vy)>12;
     player.walk += moving ? dt*7 : 0;
     player.atkCd=Math.max(0,player.atkCd-dt);
-    player.anim=Math.max(0,player.anim-dt*3);
+    player.anim=Math.max(0,player.anim-dt*2.2);
     player.hurt=Math.max(0,player.hurt-dt);
     player.inv=Math.max(0,player.inv-dt);
     player.dash=Math.max(0,player.dash-dt);
@@ -886,9 +896,11 @@
       return "羅盤指向八大浮空大陸。想去已發現的地方，我可以立刻送你一程。";
     }
     if (n.id==="arya") {
-      if (q.accepted && !q.turnedIn)
-        return "劍、星、弓、光與算盤，都是艾瑟蘭留下的路。先把步伐走穩，再來談轉職也不遲。";
-      return n.talk;
+      if (player.classId==="beginner" && player.lv>=FIRST_JOB_LV)
+        return "你的步伐已經夠穩了。選一條傳承吧：劍、星、弓、光，或是算盤。選定之後，這一期就沿著這條路走下去。準備好了嗎？";
+      if (player.classId==="beginner")
+        return "你現在是初心者。先把戰鬥與委託走熟，到 20 等再來找我，我會幫你選第一條傳承。SP 會在升級時獲得。";
+      return "你已經走上「"+cls().name+"」這條路。之後的進階傳承還早，先把已經學會的技能用順，SP 會在升級時獲得。";
     }
     if (n.id==="hawkins") {
       if (q.turnedIn)
@@ -945,6 +957,7 @@
       $("dialog").classList.add("show");
       sfx("talk");
       if (n.id==="luna") dlgAfter = commitLunaTalk;
+      if (n.id==="arya" && player.classId==="beginner" && player.lv>=FIRST_JOB_LV) dlgAfter = openJobPick;
       if (n.buff==="speed") { speedBuff=30; log("巴克的靈飲讓你步伐輕盈了！"); }
     }
   }
@@ -969,16 +982,15 @@
     g.restore();
   }
 
-  const HERO_H = 122;
-  const SHIBA_H = 76;
+  const HERO_H = 152;
+  const SHIBA_H = 90;
 
   function officialPose(opt) {
     if (opt.dizzy) return "dizzy";
     if ((opt.anim || 0) > 0) return "attack";
+    if (opt.moving) return "walk";
     if (opt.ready) return "ready";
-    if (opt.moving) return (Math.floor((opt.walk || 0) * 0.9) % 2 === 0) ? "walk" : "idle2";
-    const t = (opt.walk != null ? opt.walk : time);
-    return (Math.floor(t * 2 + (opt._x || 0)) % 2 === 0) ? "idle" : "idle2";
+    return (Math.floor(time * 2) % 2 === 0) ? "idle" : "idle2";
   }
 
   function drawSpriteAt(g, img, x, y, h, facing, flash) {
@@ -1019,7 +1031,8 @@
       ready: opt.ready, moving: opt.moving, walk: opt.walk, _x: x
     });
     const img = images[id + "_" + pose] || images[id + "_idle"];
-    drawSpriteAt(g, img, x, y, h, opt.facing || 1, (opt.hurt || 0) > 0);
+    const bob = opt.moving ? Math.sin((opt.walk || 0) * 2) * 2 : 0;
+    drawSpriteAt(g, img, x, y + bob, h, opt.facing || 1, (opt.hurt || 0) > 0);
   }
 
   function drawHair(g, c, gender, col, walk) {
@@ -1079,7 +1092,7 @@
     if (e.dead) pose="dizzy";
     else if (e.state==="attack") pose="attack";
     else if (e.state==="ready") pose="ready";
-    else if (e.state==="walk") pose = (Math.floor(e.walk)%2===0)?"walk":"idle2";
+    else if (e.state==="walk") pose = "walk";
     else pose = (Math.floor(time*2+e.x)%2===0)?"idle":"idle2";
     const img = images[e.kind+"_"+pose] || images[e.kind+"_idle"];
     const h = 104 * e.scale / 0.42;
@@ -1102,6 +1115,8 @@
 
   function render() {
     ctx.setTransform(DPR,0,0,DPR,0,0);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
     ctx.fillStyle="#87C6EF"; ctx.fillRect(0,0,W,H);
     const m = MAPS[mapId];
     const img = images["map_"+mapId];
@@ -1150,8 +1165,9 @@
       ctx.globalAlpha=1;
     }
     // nameplates
-    drawPlate(ctx, player.x, (mounted?player.y-138:player.y-118), player.name, "#3A8AD8", 15);
-    drawPlate(ctx, player.x, (mounted?player.y-122:player.y-102), "Lv."+player.lv+" "+cls().name, "#3A8AD8", 12);
+    const plateY = mounted ? player.y - 26 - HERO_H : player.y - HERO_H;
+    drawPlate(ctx, player.x, plateY - 20, player.name, "#3A8AD8", 15);
+    drawPlate(ctx, player.x, plateY - 4, "Lv."+player.lv+" "+cls().name, "#3A8AD8", 12);
     if (!mounted) drawPlate(ctx, shiba.x, shiba.y-78, "阿柴 🐾", "#C47A2A", 13);
     for (const e of enemies) {
       if (e.dead) continue;
@@ -1306,14 +1322,48 @@
     audioResume();
     pushScene();
     log("[系統] 歡迎來到風車鎮，"+player.name+"！🐾");
+    log("[系統] 你現在是初心者。到 20 等後，去廣場找艾莉亞選擇第一條傳承。");
     log("[系統] 星門就在廣場東北側，阿柴會一直跟著你。");
     syncArea();
     syncHud();
     requestSave(true);
   }
 
+
+  let pendingJob = null;
+  function openJobPick() {
+    pendingJob = null;
+    const list = $("job-list");
+    if (!list) return;
+    list.innerHTML = JOBS.map(c =>
+      `<button class="card${c.id===pendingJob?" sel":""}" data-id="${c.id}" type="button"><img class="card-art" src="assets/chars/${c.id}_idle.png" alt=""><h3>${c.icon} ${c.name}</h3><p>${c.role}<br>${c.desc}</p></button>`
+    ).join("");
+    list.onclick = (e) => {
+      const b=e.target.closest(".card"); if(!b) return;
+      pendingJob = b.dataset.id;
+      [...list.querySelectorAll(".card")].forEach(x=>x.classList.toggle("sel", x.dataset.id===pendingJob));
+    };
+    $("job-pick").classList.add("show");
+  }
+  function confirmFirstJob() {
+    if (player.classId!=="beginner") return;
+    if (!pendingJob) { log("請先點選一個職業"); return; }
+    if (!JOBS.some(c => c.id === pendingJob)) return;
+    player.classId = pendingJob;
+    applyClass();
+    player.hp = player.maxHp; player.mp = player.maxMp;
+    $("job-pick").classList.remove("show");
+    log("你選擇了「"+cls().name+"」作為第一條傳承。");
+    sfx("levelUp");
+    flash=.4;
+    syncHud(); drawFace();
+    requestSave(true);
+  }
+
   function buildClassCards() {
-    $("class-list").innerHTML = CLASSES.map(c =>
+    const classHost = $("class-list");
+    if (!classHost) return;
+    classHost.innerHTML = JOBS.map(c =>
       `<button class="card${c.id===player.classId?" sel":""}" data-id="${c.id}" type="button"><img class="card-art" src="assets/chars/${c.id}_idle.png" alt=""><h3>${c.icon} ${c.name}</h3><p>${c.role}<br>${c.desc}</p></button>`
     ).join("");
     $("class-list").onclick = (e) => {
@@ -1380,7 +1430,7 @@
     if (ev.code==="KeyQ" && ev.ctrlKey) {} // keep Q for skill; auto is 自動狩獵掣
     if (ev.code==="KeyT") toggleAuto();
     if (ev.code==="Enter" || ev.code==="KeyE") interact();
-    if (ev.code==="Escape") { $("drawer").classList.remove("open"); $("dialog").classList.remove("show"); $("sheet").classList.remove("show"); dlgAfter=null; }
+    if (ev.code==="Escape") { $("drawer").classList.remove("open"); $("dialog").classList.remove("show"); $("sheet").classList.remove("show"); if ($("job-pick")) $("job-pick").classList.remove("show"); dlgAfter=null; }
   });
   window.addEventListener("keyup", ev => { keys[ev.code.toLowerCase()]=false; });
   const SFX_UI_SKIP = { "sk-atk":1, "sk-heal":1, "sk-star":1, "sk-shield":1, "sk-ult":1, "sk-mount":1, "item-potion":1, "item-scroll":1, "item-elixir":1, "prompt":1 };
@@ -1475,7 +1525,9 @@
     $("dialog").classList.remove("show");
     if (dlgAfter) { const fn=dlgAfter; dlgAfter=null; fn(); }
   };
-  $("sheet-ok").onclick=()=> $("sheet").classList.remove("show");
+      if ($("btn-job-ok")) $("btn-job-ok").onclick=()=>confirmFirstJob();
+    if ($("btn-job-cancel")) $("btn-job-cancel").onclick=()=>$("job-pick").classList.remove("show");
+    $("sheet-ok").onclick=()=> $("sheet").classList.remove("show");
   $("sheet").addEventListener("click", ev=>{
     const b=ev.target.closest("[data-warp]");
     if(!b) return;

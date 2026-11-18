@@ -329,7 +329,7 @@ if (location.hostname.endsWith("github.io")) {
       <img src="assets/chars/beginner_idle.png" alt="">
       <img class="shiba" src="assets/shiba/shiba_idle2.png" alt="">
     </div>
-    <p style="font-size:14px;line-height:1.8;margin:10px 0 18px">歡迎來到浮空大陸艾瑟蘭。<br>選好職業，與阿柴一起從風車鎮出發吧。</p>
+    <p style="font-size:14px;line-height:1.8;margin:10px 0 18px">歡迎來到浮空大陸艾瑟蘭。<br>以初心者出發，到 20 等再向艾莉亞選擇第一個職業。</p>
     <div id="title-fresh">
       <button class="go" id="btn-begin" type="button">開始冒險</button>
     </div>
@@ -348,9 +348,10 @@ if (location.hostname.endsWith("github.io")) {
 
 <div class="overlay" id="create">
   <div class="panel">
-    <div class="logo" style="font-size:24px;letter-spacing:.08em">選擇傳承職業</div>
+    <div class="logo" style="font-size:24px;letter-spacing:.08em">建立角色</div>
     <canvas id="pv" width="180" height="200"></canvas>
-    <div class="classes" id="class-list"></div>
+    <p style="font-size:13px;line-height:1.7;margin:0 0 10px">你會以初心者踏出第一步。到 20 等，再向廣場的艾莉亞選擇第一條傳承。</p>
+    <div class="classes" id="class-list" style="display:none"></div>
     <div>
       <button class="opt" id="btn-male" type="button">男性</button>
       <button class="opt" id="btn-female" type="button">女性</button>
@@ -362,6 +363,17 @@ if (location.hostname.endsWith("github.io")) {
       <div class="name-hint" id="name-hint"></div>
     </div>
     <button class="go" id="btn-enter" type="button">進入風車鎮</button>
+  </div>
+</div>
+
+
+<div class="overlay" id="job-pick">
+  <div class="panel">
+    <div class="logo" style="font-size:24px;letter-spacing:.08em">選擇第一個職業</div>
+    <p style="font-size:14px;line-height:1.7;margin:8px 0 14px">到了 20 等，可以向艾莉亞選擇第一條傳承。選定後，這一期就沿著這條路走下去。</p>
+    <div class="classes" id="job-list"></div>
+    <button class="go" id="btn-job-ok" type="button">確定轉職</button>
+    <button class="opt" id="btn-job-cancel" type="button">再想想</button>
   </div>
 </div>
 
